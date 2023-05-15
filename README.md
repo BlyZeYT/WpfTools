@@ -1,4 +1,4 @@
-![BlyZe](https://user-images.githubusercontent.com/95288041/198973742-97289725-4026-4202-bf6d-3c9068c54d56.svg)
+![Logo](https://raw.githubusercontent.com/BlyZeYT/WpfTools/master/logo.png)
 
 # WPF Tools
 A library that makes your life in developing WPF apps easier.
