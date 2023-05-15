@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/BlyZeYT/WpfTools/master/banner.png" height="150">
+<img src="https://raw.githubusercontent.com/BlyZeYT/WpfTools/master/banner.png" height="250">
 
 # WPF Tools
 A library that makes your life in developing WPF apps easier.
