@@ -4,10 +4,33 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <PackageId>BlyZe.$(AssemblyName)</PackageId>
+    <Title>BlyZe.$(AssemblyName)</Title>
+    <Authors>BlyZe</Authors>
+    <Product>BlyZe.$(AssemblyName)</Product>
+    <Description>An easy to use package for WPF that makes your life easier. :)</Description>
+    <PackageProjectUrl>https://github.com/BlyZeYT/WpfTools</PackageProjectUrl>
+    <PackageIcon>logo.png</PackageIcon>
+    <RepositoryUrl>https://github.com/BlyZeYT/WpfTools</RepositoryUrl>
+    <PackageTags>c#, wpf, blyze, wpftools, windows, wpftools, blyze.wpftools, wpf helper</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
