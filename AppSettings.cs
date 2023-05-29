@@ -16,86 +16,86 @@ public sealed class AppSettings : IAppSettings
 
     public void AddSetting(Setting setting)
     {
-        Read();
+        ReadConfig();
 
         ThrowIfKeyExists(setting.Key);
 
         _settings.Add(setting.Key, setting.Value);
 
-        Update();
+        OverrideConfig();
     }
 
     public bool TryAddSetting(Setting setting)
     {
-        Read();
+        ReadConfig();
 
         var added = _settings.TryAdd(setting.Key, setting.Value);
 
-        Update();
+        OverrideConfig();
 
         return added;
     }
 
     public void RemoveSetting(string key)
     {
-        Read();
+        ReadConfig();
 
         ThrowIfKeyNotExists(key);
 
         _settings.Remove(key);
 
-        Update();
+        OverrideConfig();
     }
 
     public bool TryRemoveSetting(string key)
     {
-        Read();
+        ReadConfig();
 
         var removed = _settings.Remove(key);
 
-        Update();
+        OverrideConfig();
 
         return removed;
     }
 
     public bool ContainsSetting(string key)
     {
-        Read();
+        ReadConfig();
 
         return _settings.ContainsKey(key);
     }
 
     public bool ContainsSetting(object value)
     {
-        Read();
+        ReadConfig();
 
         return _settings.ContainsValue(value);
     }
 
     public bool ContainsSetting(Setting setting)
     {
-        Read();
+        ReadConfig();
 
         return ContainsSetting(setting.Key);
     }
 
     public TValue GetSetting<TValue>(string key) where TValue : class
     {
-        Read();
+        ReadConfig();
 
         return (TValue)_settings[key];
     }
 
     public TValue? GetSettingOrDefault<TValue>(string key, TValue defaultValue) where TValue : class
     {
-        Read();
+        ReadConfig();
 
         return (TValue)_settings.GetValueOrDefault(key, defaultValue);
     }
 
     public bool TryGetSetting<TValue>(string key, out TValue value) where TValue : class
     {
-        Read();
+        ReadConfig();
 
         var hasValue = _settings.TryGetValue(key, out var obj);
 
@@ -110,7 +110,7 @@ public sealed class AppSettings : IAppSettings
     {
         _settings.Clear();
 
-        Update();
+        OverrideConfig();
     }
 
     private void ThrowIfKeyExists(string key)
@@ -125,14 +125,17 @@ public sealed class AppSettings : IAppSettings
             throw new AppSettingsException($"Key: {key} does not exist");
     }
 
-    private void Update() => Json.Write(_path, _settings);
+    private void OverrideConfig()
+    {
+        Json.Write(_path, _settings);
+        _shouldRead = true;
+    }
 
-    private Dictionary<string, object> Read()
+    private Dictionary<string, object> ReadConfig()
     {
         if (!_shouldRead) return _settings;
 
         _shouldRead = false;
-
         return Json.Read<Dictionary<string, object>>(_path) ?? new();
     }
 }

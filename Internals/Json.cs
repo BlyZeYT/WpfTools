@@ -5,8 +5,10 @@ using System.IO;
 
 public static class Json
 {
-    public static T? Read<T>(string path) where T : class
+    public static T? Read<T>(string? path) where T : class
     {
+        if (!File.Exists(path)) return null;
+
         using (var sr = new StreamReader(path))
         {
             return JsonConvert.DeserializeObject<T>(sr.ReadToEnd());
