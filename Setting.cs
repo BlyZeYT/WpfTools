@@ -1,9 +1,14 @@
 ﻿namespace WpfTools;
 
-public sealed class Setting
+public sealed record Setting : Setting<object>
+{
+    public Setting(string key, object value) : base(key, value) { }
+}
+
+public record Setting<T> where T : notnull
 {
     public string Key { get; }
-    public object Value { get; }
+    public T Value { get; }
 
-    public Setting(string key, object value) => (Key, Value) = (key, value);
+    public Setting(string key, T value) => (Key, Value) = (key, value);
 }

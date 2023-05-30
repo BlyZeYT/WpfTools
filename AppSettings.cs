@@ -8,8 +8,8 @@ using WpfTools.Internals;
 public sealed class AppSettings : IAppSettings
 {
     private readonly string _path = Path.Combine(Environment.CurrentDirectory, "appsettings.config.json");
-    private readonly Dictionary<string, object> _settings = new();
 
+    private Dictionary<string, object> _settings = new();
     private bool _shouldRead = true;
 
     public IReadOnlyDictionary<string, object> Settings => _settings.AsReadOnly();
@@ -25,7 +25,29 @@ public sealed class AppSettings : IAppSettings
         OverrideConfig();
     }
 
+    public void AddSetting<TValue>(Setting<TValue> setting) where TValue : notnull
+    {
+        ReadConfig();
+
+        ThrowIfKeyExists(setting.Key);
+
+        _settings.Add(setting.Key, setting.Value);
+
+        OverrideConfig();
+    }
+
     public bool TryAddSetting(Setting setting)
+    {
+        ReadConfig();
+
+        var added = _settings.TryAdd(setting.Key, setting.Value);
+
+        OverrideConfig();
+
+        return added;
+    }
+
+    public bool TryAddSetting<TValue>(Setting<TValue> setting) where TValue : notnull
     {
         ReadConfig();
 
@@ -72,36 +94,37 @@ public sealed class AppSettings : IAppSettings
         return _settings.ContainsValue(value);
     }
 
-    public bool ContainsSetting(Setting setting)
-    {
-        ReadConfig();
+    public bool ContainsSetting(Setting setting) => ContainsSetting(setting.Key);
 
-        return ContainsSetting(setting.Key);
-    }
+    public bool ContainsSetting<TValue>(Setting<TValue> setting) where TValue : notnull
+        => ContainsSetting(setting.Key);
 
-    public TValue GetSetting<TValue>(string key) where TValue : class
+    public TValue GetSetting<TValue>(string key) where TValue : notnull
     {
         ReadConfig();
 
         return (TValue)_settings[key];
     }
 
-    public TValue? GetSettingOrDefault<TValue>(string key, TValue defaultValue) where TValue : class
+    public TValue GetSettingOrDefault<TValue>(string key, TValue defaultValue) where TValue : notnull
     {
         ReadConfig();
 
         return (TValue)_settings.GetValueOrDefault(key, defaultValue);
     }
 
-    public bool TryGetSetting<TValue>(string key, out TValue value) where TValue : class
+    public bool TryGetSetting<TValue>(string key, out TValue value) where TValue : notnull
     {
-        ReadConfig();
-
-        var hasValue = _settings.TryGetValue(key, out var obj);
-
-        value = (TValue)obj!;
-
-        return hasValue;
+        try
+        {
+            value = GetSetting<TValue>(key);
+            return true;
+        }
+        catch (Exception)
+        {
+            value = default!;
+            return false;
+        }
     }
 
     public object this[string key] => GetSetting<object>(key);
@@ -131,12 +154,12 @@ public sealed class AppSettings : IAppSettings
         _shouldRead = true;
     }
 
-    private Dictionary<string, object> ReadConfig()
+    private void ReadConfig()
     {
-        if (!_shouldRead) return _settings;
+        if (!_shouldRead) return;
 
         _shouldRead = false;
-        return Json.Read<Dictionary<string, object>>(_path) ?? new();
+        _settings = Json.Read<Dictionary<string, object>>(_path) ?? new();
     }
 }
 
@@ -146,7 +169,11 @@ public interface IAppSettings
 
     public void AddSetting(Setting setting);
 
+    public void AddSetting<TValue>(Setting<TValue> setting) where TValue : notnull;
+
     public bool TryAddSetting(Setting setting);
+
+    public bool TryAddSetting<TValue>(Setting<TValue> setting) where TValue : notnull;
 
     public void RemoveSetting(string key);
 
@@ -158,11 +185,13 @@ public interface IAppSettings
 
     public bool ContainsSetting(Setting setting);
 
-    public TValue GetSetting<TValue>(string key) where TValue : class;
+    public bool ContainsSetting<TValue>(Setting<TValue> setting) where TValue : notnull;
 
-    public TValue? GetSettingOrDefault<TValue>(string key, TValue defaultValue) where TValue : class;
+    public TValue GetSetting<TValue>(string key) where TValue : notnull;
 
-    public bool TryGetSetting<TValue>(string key, out TValue value) where TValue : class;
+    public TValue GetSettingOrDefault<TValue>(string key, TValue defaultValue) where TValue : notnull;
+
+    public bool TryGetSetting<TValue>(string key, out TValue value) where TValue : notnull;
 
     public object this[string key] { get; }
 

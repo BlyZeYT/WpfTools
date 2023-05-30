@@ -16,8 +16,9 @@
     <PackageTags>c#, wpf, blyze, wpftools, windows, wpftools, blyze.wpftools, wpf helper</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-    <Version>1.1.0</Version>
-    <PackageReleaseNotes>Fixed AppSettings crash when json file does not exist</PackageReleaseNotes>
+    <Version>1.2.0</Version>
+    <PackageReleaseNotes>Fixed AppSettings Bug that its not updated.
+Added AppSettings methods and Setting&lt;T&gt;</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
